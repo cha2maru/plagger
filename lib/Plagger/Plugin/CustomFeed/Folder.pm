@@ -34,7 +34,8 @@ sub aggregate {
 
 	my $feed = $self->conf->{feed};
 	$feed = [ $feed ] unless ref $feed;
-	my $encoding = $self->conf->{encoding};
+#	my $encoding = $self->conf->{encoding};
+	$self->conf->{encoding} = 'cp932' undef $self->conf->{encoding};
 
 	for my $config (@{ $feed }) {
 		if (!ref($config)) {
@@ -133,8 +134,8 @@ sub file_infos {
 
 sub convert {
   my ($self, $str) = @_;
-  my $encoded = $self->{config}->{encoding} || 'cp932';
-  Encode::from_to($str, $encoded , 'utf8') unless utf8::is_utf8($str);
+#  my $encoded = $self->{config}->{encoding} || 'cp932';
+  Encode::from_to($str, $self->{config}->{encoding} , 'utf8') unless utf8::is_utf8($str);
   return $str;
 }
 
