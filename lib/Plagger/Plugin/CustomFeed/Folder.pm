@@ -35,7 +35,7 @@ sub aggregate {
 	my $feed = $self->conf->{feed};
 	$feed = [ $feed ] unless ref $feed;
 #	my $encoding = $self->conf->{encoding};
-	$self->conf->{encoding} = 'cp932' undef $self->conf->{encoding};
+	$self->conf->{encoding} = 'cp932' unless ref $self->conf->{encoding};
 
 	for my $config (@{ $feed }) {
 		if (!ref($config)) {
