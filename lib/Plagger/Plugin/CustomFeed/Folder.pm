@@ -134,8 +134,8 @@ sub file_infos {
 
 sub convert {
   my ($self, $str) = @_;
-#  my $encoded = $self->{config}->{encoding} || 'cp932';
-  Encode::from_to($str, $self->{config}->{encoding} , 'utf8') unless utf8::is_utf8($str);
+  my $encoded = $self->{config}->{encoding} || 'cp932';
+  Encode::from_to($str, $encoded , 'utf8') unless utf8::is_utf8($str);
   return $str;
 }
 
