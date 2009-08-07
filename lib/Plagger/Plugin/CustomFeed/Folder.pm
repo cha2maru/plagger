@@ -9,8 +9,10 @@ use URI::Escape ();
 use URI::file;
 use File::Glob ':glob';
 use File::stat;
+use File::Basename;
 use Fcntl ':mode';
 use Encode;
+use Plagger::Enclosure;
 
 sub register {
 	my ($self, $context) = @_;
@@ -34,8 +36,7 @@ sub aggregate {
 
 	my $feed = $self->conf->{feed};
 	$feed = [ $feed ] unless ref $feed;
-#	my $encoding = $self->conf->{encoding};
-	$self->conf->{encoding} = 'cp932' unless ref $self->conf->{encoding};
+	my $encoding = $self->conf->{encoding};
 
 	for my $config (@{ $feed }) {
 		if (!ref($config)) {
@@ -87,7 +88,13 @@ sub aggregate {
 			$entry->link($file_info->{uri});
 			$entry->date(Plagger::Date->from_epoch($file_info->{mtime}));
 			$entry->author($self->convert($file_info->{author}));
-#			$entry->body($self->convert($file_info->{path}));
+			$entry->body($self->convert($file_info->{path}));
+
+			my $enclosure = Plagger::Enclosure->new;
+			$enclosure->filename($self->convert($file_info->{name}));
+			$enclosure->local_path($file_info->{uri});
+			$enclosure->auto_set_type;
+			$entry->add_enclosure($enclosure);
 
 			$feed->add_entry($entry);
 		}
@@ -110,7 +117,7 @@ sub file_infos {
 		$context->log(debug => "Encode $debuglog.");
 
 		my $file_info = {
-			name  => $file,
+			name  => basename($path),
 			path  => $path,
 			uri   => URI::file->new($path)->as_string,
 		};
@@ -135,7 +142,7 @@ sub file_infos {
 sub convert {
   my ($self, $str) = @_;
   my $encoded = $self->{config}->{encoding} || 'cp932';
-  Encode::from_to($str, $encoded , 'utf8') unless utf8::is_utf8($str);
+  Encode::from_to($str, $self->{conf}->{encoding} , 'utf8') unless utf8::is_utf8($str);
   return $str;
 }
 
