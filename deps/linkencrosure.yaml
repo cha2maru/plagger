@@ -1,0 +1,19 @@
+plugins:
+  - module: CustomFeed::Folder
+    config:
+      encoding: cp932
+      feed:
+        - dir: c:/usr/local/mov/
+  - module: Filter::LinkEnclosure
+    config:
+      dir: C:/usr/www/link/
+  - module: Filter::RewriteEnclosureURL
+    config:
+      rewrite:
+        - local: file:///C:/usr/www
+          url: http://192.168.1.20:8080
+  - module: Publish::Feed
+    config:
+      dir: c:/usr/www
+      format: RSS
+      filename: %i.xml
