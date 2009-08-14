@@ -97,7 +97,6 @@ sub aggregate {
     			$enclosure->auto_set_type;
     			$entry->add_enclosure($enclosure);
     		}
-
 			$feed->add_entry($entry);
 		}
 
