@@ -2,6 +2,7 @@ plugins:
   - module: CustomFeed::Folder
     config:
       encoding: cp932
+      enclosures:  .*(mp4|avi|mpg|mpeg|ogg|mp3)[^\.]*
       feed:
         - dir: c:/usr/local/mov/
   - module: Filter::LinkEnclosure
