@@ -36,7 +36,6 @@ sub aggregate {
 
 	my $feed = $self->conf->{feed};
 	$feed = [ $feed ] unless ref $feed;
-	my $encoding = $self->conf->{encoding};
 
 	for my $config (@{ $feed }) {
 		if (!ref($config)) {
@@ -89,12 +88,15 @@ sub aggregate {
 			$entry->date(Plagger::Date->from_epoch($file_info->{mtime}));
 			$entry->author($self->convert($file_info->{author}));
 			$entry->body($self->convert($file_info->{path}));
+			
 
-			my $enclosure = Plagger::Enclosure->new;
-			$enclosure->filename($self->convert($file_info->{name}));
-			$enclosure->local_path($file_info->{uri});
-			$enclosure->auto_set_type;
-			$entry->add_enclosure($enclosure);
+            if ($self->{conf}->{enclosures} && $file_info->{name} =~ /^$self->{conf}->{enclosures}/) {
+    			my $enclosure = Plagger::Enclosure->new;
+    			$enclosure->filename($self->convert($file_info->{name}));
+    			$enclosure->local_path($file_info->{uri});
+    			$enclosure->auto_set_type;
+    			$entry->add_enclosure($enclosure);
+    		}
 
 			$feed->add_entry($entry);
 		}
@@ -141,7 +143,7 @@ sub file_infos {
 
 sub convert {
   my ($self, $str) = @_;
-  my $encoded = $self->{config}->{encoding} || 'cp932';
+  my $encoded = $self->{conf}->{encoding} || 'cp932';
   Encode::from_to($str, $self->{conf}->{encoding} , 'utf8') unless utf8::is_utf8($str);
   return $str;
 }
@@ -166,11 +168,13 @@ plugins:
         - url: file:///C:/xanalog/dailydata/*.dat
         - url: file:///C:/xanalog/dailydata/
         - file:///C:/xanalog/dailydata/
-      - encoding: cp932
+      encoding: cp932
+      enclosures: .*(mp4|avi|mpg|mpeg|ogg|mp3)[^\.]*
 
 =head1 AUTHOR
 
 Hidehiko Kawauchi
+
 
 =head1 SEE ALSO
 
