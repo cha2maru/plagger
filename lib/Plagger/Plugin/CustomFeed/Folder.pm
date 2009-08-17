@@ -82,7 +82,7 @@ sub aggregate {
 			next if ($config->{skip_hidden} && $file_info->{name} =~ /\A\./);
 
 			my $entry = Plagger::Entry->new;
-			$entry->title($self->convert($file_info->{name}));
+			$entry->title(File::Basename::basename($self->convert($file_info->{path})));
 #			$entry->id($self->convert($file_info->{path}));
 			$entry->link($file_info->{uri});
 			$entry->date(Plagger::Date->from_epoch($file_info->{mtime}));
@@ -92,11 +92,12 @@ sub aggregate {
 
             if ($self->{conf}->{enclosures} && $file_info->{name} =~ /^$self->{conf}->{enclosures}/) {
     			my $enclosure = Plagger::Enclosure->new;
-    			$enclosure->filename($self->convert($file_info->{name}));
+    			$enclosure->filename(File::Basename::basename($self->convert($file_info->{path})));
     			$enclosure->local_path($file_info->{uri});
     			$enclosure->auto_set_type;
     			$entry->add_enclosure($enclosure);
     		}
+
 			$feed->add_entry($entry);
 		}
 
